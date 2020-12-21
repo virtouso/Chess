@@ -10,7 +10,20 @@ public class GameManager : MonoBehaviour
 
 
     #region public
+    public static GameManager Instance;
+    public ChessGame ChessGame;
+    public void ClearMoves()
+    {
+        for (int i = 0; i < GameReferences.Rows.Count; i++)
+        {
+            for (int j = 0; j < GameReferences.Columns.Count; j++)
+            {
+                GameObject Square = GameObject.Find(GameReferences.Columns.ElementAt(j).Value + GameReferences.Rows.ElementAt(i).Value);
+                Square.GetComponent<SpriteRenderer>().color = Color.white;
+            }
 
+        }
+    }
     #endregion
 
     #region unity references
@@ -23,15 +36,17 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region private
-    ChessGame ChessGame;
 
-
-
+    private List<GameObject> PiecesGameObjects = new List<GameObject>();
 
     #endregion
 
 
     #region Unity callbacks
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+    }
     void Start()
     {
         this.ChessGame = new ChessGame();
@@ -64,6 +79,10 @@ public class GameManager : MonoBehaviour
                     squareSprite.sprite = _blackSquare;
                 }
 
+
+                BoxCollider2D collider = Square.AddComponent<BoxCollider2D>();
+                collider.size = new Vector2(squareSprite.size.y, squareSprite.size.x);
+                collider.isTrigger = true;
                 Square.transform.position = /*_boardStartPosition += */new Vector3(j * squareSprite.size.y, i * squareSprite.size.x, 0);
                 GeneratePiece(GameReferences.Columns.ElementAt(j).Value, GameReferences.Rows.ElementAt(i).Value);
             }
@@ -86,12 +105,37 @@ public class GameManager : MonoBehaviour
     private void GeneratePieceObject(Vector3 position, PieceData piece)
     {
         GameObject pieceGameObject = new GameObject(piece.Name);
+        PiecesGameObjects.Add(pieceGameObject);
         SpriteRenderer spriteRendere = pieceGameObject.AddComponent<SpriteRenderer>();
         spriteRendere.sprite = piece.sprite;
         pieceGameObject.transform.position = position - new Vector3(0, 0, 0.5f);
         if (piece.Owner == Owners.Black) { pieceGameObject.transform.eulerAngles = new Vector3(0, 0, 180); }
         pieceGameObject.transform.localScale *= 0.9f;
 
+    }
+
+
+
+    private void RemoveAllPieces()
+    {
+        foreach (var item in PiecesGameObjects)
+        {
+            Destroy(item);
+        }
+        PiecesGameObjects.Clear();
+    }
+
+
+    public void RegeneratePieces()
+    {
+        RemoveAllPieces();
+        for (int i = 0; i < GameReferences.Rows.Count; i++)
+        {
+            for (int j = 0; j < GameReferences.Columns.Count; j++)
+            {
+                GeneratePiece(GameReferences.Columns.ElementAt(j).Value, GameReferences.Rows.ElementAt(i).Value);
+            }
+        }
     }
 
     #endregion
