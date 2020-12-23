@@ -7,11 +7,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    public static PlayerController Instance;
     private System.Action PlayerAction;
 
     private void Awake()
     {
+        Instance = this;
         PlayerAction = SelectPiece;
 
     }
@@ -77,8 +78,19 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.ChessGame.MakeMove(new Move(new Position(selectedMove), new Position(squareName), Player.White), true);
         GameManager.Instance.ClearMoves();
         GameManager.Instance.RegeneratePieces();
+        StartCoroutine(StartAI());
+    }
+
+
+    IEnumerator StartAI()
+    {
+        yield return new  WaitForSeconds(1);
+        AIController.Instance.MakeAiMove();
 
     }
+
+
+
 
 
     private void GetConditionForMouseClick(out bool hitSquare, out string name)

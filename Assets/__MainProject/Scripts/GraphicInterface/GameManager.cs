@@ -24,6 +24,18 @@ public class GameManager : MonoBehaviour
 
         }
     }
+    public void RegeneratePieces()
+    {
+        RemoveAllPieces();
+        for (int i = 0; i < GameReferences.Rows.Count; i++)
+        {
+            for (int j = 0; j < GameReferences.Columns.Count; j++)
+            {
+                GeneratePiece(GameReferences.Columns.ElementAt(j).Value, GameReferences.Rows.ElementAt(i).Value);
+            }
+        }
+    }
+
     #endregion
 
     #region unity references
@@ -126,17 +138,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void RegeneratePieces()
-    {
-        RemoveAllPieces();
-        for (int i = 0; i < GameReferences.Rows.Count; i++)
-        {
-            for (int j = 0; j < GameReferences.Columns.Count; j++)
-            {
-                GeneratePiece(GameReferences.Columns.ElementAt(j).Value, GameReferences.Rows.ElementAt(i).Value);
-            }
-        }
-    }
+ 
 
     #endregion
 
